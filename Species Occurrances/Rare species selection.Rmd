@@ -1,0 +1,57 @@
+---
+title: "Rare Species Selection"
+author: "Josie Lesage"
+date: "3/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library("tidyverse")
+```
+
+# Background and goals
+This document aims to help us select which species to include in our rare species search as we map trails in the Thomas Fire scar.  
+
+We will draw on data from the CCH-1 and CCH-2 databases, CNDDB, Cal-IPC, etc. 
+
+For CCH-1 records, use the "lat and long" style search, then follow along and download as a tab-delimited file. 
+
+# Data Import
+```{r data import}
+cnps_list <- read.csv("CNPS_Rares_SB_Ventura.csv")
+cnddb <- read.csv("CNDDB_Thomas_Fire.csv")
+cch1 <- read.csv("CCH1.csv") %>%
+  rename(Scientific.Name = Scientific_Name)
+```
+
+```{r merge tables and export}
+cch1_rares <- left_join(cch1, cnps_list, by="Scientific.Name") %>%
+  filter(!is.na(CRPR))
+
+write.csv(cch1_rares, "CCH1_Rares_TF.csv")
+```
+
+
+
+
+
+# ArcGIS
+
+## Importing a CSV
+Import by going to file -> add data -> add XY data -> browse to CSV's house
+The standard online download format is World - WGS 1984
+
+Take the temporary events file - and export the data from whatever format it was brought in as and turn it into a shapefile. Name as desired and put into a geodatabase. YOU MUST DO THIS BEFORE YOU CLIP. You can't clip from the raw data - you must convert it to a shapefile and add to GBD first.
+
+## To clip
+You have to go to "select by layer" and answer the questions for select by location or feature.
+
+## Merging data
+Load data into the GBD shapefile if you need to merge two things (like SB and Ventura counties).
+
+
+# To Do 
+CCH2 - download all species records, clip to fire, and limit to rares/weeds
+CCH1 - filter to just weeds
+
+Create overall species list - consider filtering by habitat type
